@@ -1,0 +1,93 @@
+//Query 1
+MATCH (n:Students) 
+WHERE n.name = 'Kevin' 
+RETURN n.c_addr
+
+//Query 2
+MATCH (n:Students)-[:majors]->(d:Degrees)
+WHERE n.name = 'Kevin'
+RETURN d.name, d.level
+
+//Query 3
+MATCH (n:Departments)-[:offers]->(c:Courses) 
+WHERE n.name = 'Computer Science' 
+RETURN c.name, c.number ORDER BY c.number
+
+//Query 4
+MATCH (n:Students)-[:registers]->(c:Courses) 
+WHERE registers.regtime = 'Fall2020' 
+RETURN n.name
+
+//Query 5
+MATCH (d:Departments)-[:administers]->(e:Degrees) 
+WHERE d.name = 'Computer Science' 
+RETURN e.name, e.level
+
+//Query 6
+MATCH (n:Students)-[:minors]->(d:Degrees) 
+RETURN n.snum, n.name 
+ORDER BY n.snum
+
+//Query 7
+MATCH (s:Students)-[:registers]->(:Courses {name: 'database'})
+MATCH (s)-[m:majors]->(:Degrees)
+WHERE NOT m.level = 'BS'
+RETURN s.snum, s.name
+ORDER BY s.snum
+
+//Query 8
+MATCH (n:Students) 
+WHERE toLower(n.name) CONTAINS 'n' 
+RETURN n.name
+
+ //Query 9
+MATCH (n:Students) 
+WHERE n.name > 'Becky' AND n.name < 'Nicole'
+RETURN n.name
+
+ //Query 10
+MATCH (c:Courses)<-[:registers]-(s:Students)
+RETURN c.number, c.name, COUNT(s) AS NumStudents
+ORDER BY c.number
+
+ //Query 11
+MATCH (d:Degrees {name:'Software Engineering'})<-[r]-(n:Students)
+WHERE n.gender = 'F' AND (type(r) = 'majors' OR type(r) = 'minors')
+RETURN COUNT(n) AS WomenInSE
+
+ //Query 12
+MATCH (n:Students)-[r:registers]->(c:Courses) 
+RETURN c.number, c.name, avg(r.grade) AS averageGrade
+
+ //Query 13
+MATCH (n:Students)-[r]->(d:Degrees)<-[:administers]-(:Departments{college: "LAS"}) 
+WHERE n.gender ='F' AND (type(r) = 'majors' OR type(r) = 'minors') 
+WITH DISTINCT n 
+RETURN COUNT(n) AS womenInLAS
+
+ //Query 14
+MATCH (d:Degrees)<-[:majors|:minors]-(n:Students)
+WITH d, SUM(CASE WHEN n.gender = 'M' THEN 1 ELSE 0 END) AS maleCount, 
+SUM(CASE WHEN s.gender = 'F' THEN 1 ELSE 0 END) AS femaleCount
+WHERE maleCount > femaleCount
+RETURN d.name AS DegreeName
+
+
+//Query 15
+MATCH (n:Students)
+WITH MAX(n.dob) AS youngest
+MATCH (n:Students)-[:majors]->(d:Degrees)
+WHERE n.dob = youngest
+RETURN d.name
+
+//Query 16 (EXTRA CREDIT)
+
+
+
+//Query 17 (EXTRA CREDIT)
+MATCH (s:Students)-[r]->(d:Degrees)
+WHERE (type(r) = 'majors' OR type(r) = 'minors')
+WITH d, COUNT(s) AS studentCount
+ORDER BY studentCount DESC
+LIMIT 1
+RETURN d.name AS PopDegree, studentCount AS NumStudents

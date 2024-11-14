@@ -1,0 +1,15 @@
+//Q1
+MATCH (s:Students {ssn: 746897816})
+SET s.name = 'Scott'
+
+//Q2
+MATCH (n:Students {ssn: 746897816})-[r:majors]->(:Degrees)
+DELETE r
+WITH n
+MATCH (d:Degrees {name: 'Computer Science', level: 'MS'})
+MERGE (n)-[:majors]->(d)
+
+//Q3
+MATCH (s:Students)-[r:registers]->(c:Courses)
+WHERE registers.regtime = 'Spring2021'
+DELETE r
